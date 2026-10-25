@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .swipe-row { -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; -ms-overflow-style: none; }
+  .swipe-row::-webkit-scrollbar { display: none; }
+}
+
+@layer base {
+  body { @apply bg-canvas text-ink font-body antialiased; }
+  :focus-visible { @apply outline-none ring-4 ring-royal/60 ring-offset-2 ring-offset-canvas rounded-md; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
