@@ -111,6 +111,30 @@ function applyProductRenames() {
 }
 applyProductRenames();
 
+// Idempotent catalog sync: inserts catalog rows missing from the db (by slug) and fills an empty
+// image_url on existing rows. Safe on every start; never overwrites a non-empty image_url or edits other fields.
+function syncCatalogFromFile() {
+  const file = path.join(__dirname, 'src', 'data', 'catalog.json');
+  let items;
+  try { items = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return; }
+  db.transaction(() => {
+    for (const p of items) {
+      const existing = db.find('products', (r) => r.slug === p.slug);
+      if (!existing) {
+        db.insert('products', {
+          slug: p.slug, name: p.name, category: p.category, variant: p.variant, price: p.price, stock: p.stock,
+          description: p.description, storage: p.storage, condition: p.condition, battery: p.battery, color: p.color,
+          image_url: p.image_url || '', active: p.active, rating: p.rating ?? null, review_count: p.review_count ?? null,
+          compare_price: p.compare_price ?? null, created_at: nowStamp(),
+        });
+      } else if (!existing.image_url && p.image_url) {
+        db.update('products', (r) => r.slug === p.slug, { image_url: p.image_url });
+      }
+    }
+  });
+}
+syncCatalogFromFile();
+
 // ---------- helpers ----------
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
