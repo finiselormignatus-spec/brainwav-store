@@ -42,9 +42,9 @@ export default function ProductCard({ product, index = 0, className = '' }) {
     >
       <Link
         to={`/product/${product.slug}`}
-        className="group flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface transition-transform duration-200 active:scale-[0.98]"
+        className="group flex h-full flex-col overflow-hidden rounded-md border border-neutral-200 bg-white transition-transform duration-200 active:scale-[0.98]"
       >
-        <div className={`relative grid aspect-square place-items-center p-2 md:p-3 bg-transparent`}>
+        <div className="relative grid aspect-square place-items-center bg-white p-3">
           {product.image_url ? (
             <img src={product.image_url} alt="" className="h-full w-full object-contain" loading="lazy" />
           ) : (
@@ -53,8 +53,8 @@ export default function ProductCard({ product, index = 0, className = '' }) {
             </span>
           )}
         </div>
-        <div className="flex flex-1 flex-col gap-1.5 p-3 md:gap-2 md:p-4">
-          <h3 className="font-display text-base font-bold leading-snug">{product.name}</h3>
+        <div className="flex flex-1 flex-col gap-1 p-2.5 md:p-3">
+          <h3 className="font-sans text-[13px] font-normal leading-snug text-neutral-500 line-clamp-2">{product.name}</h3>
           {product.category === 'iphones' ? <IphonePills product={product} /> : product.variant && <p className="text-sm text-muted">{product.variant}</p>}
           {product.rating != null && (
             <p className="flex items-center gap-1.5 text-xs font-semibold text-muted" aria-label={`Rated ${Number(product.rating).toFixed(1)} out of 5 from ${product.review_count || 0} reviews`}>
@@ -67,7 +67,7 @@ export default function ProductCard({ product, index = 0, className = '' }) {
               {product.compare_price > product.price && (
                 <span className="text-xs font-semibold text-muted line-through tabular-nums">{money(product.compare_price)}</span>
               )}
-              <span className="font-display text-lg font-extrabold tabular-nums">{money(product.price)}</span>
+              <span className="font-sans text-base font-bold text-black tabular-nums">{money(product.price)}</span>
             </span>
             <span className={`whitespace-nowrap rounded-full px-2 py-1 text-[11px] font-semibold md:text-xs md:px-2.5 ${toneClass[stock.tone]}`}>{stock.text}</span>
           </div>
