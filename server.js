@@ -137,8 +137,11 @@ function seedStartup() {
           battery: p.battery ?? null, color: p.color || '', rating: p.rating ?? null, review_count: p.review_count ?? null,
           compare_price: p.compare_price ?? null, created_at: nowStamp(),
         });
-      } else if (!existing.image_url && p.image_url) {
-        db.update('products', (r) => r.slug === p.slug, { image_url: p.image_url });
+      } else {
+        const patch = {};
+        if (!existing.image_url && p.image_url) patch.image_url = p.image_url;
+        if (existing.active !== 1) patch.active = 1;
+        if (Object.keys(patch).length) db.update('products', (r) => r.slug === p.slug, patch);
       }
     }
     for (const [slug, img] of Object.entries(IMAGE_REPOINTS)) {
