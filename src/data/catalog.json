@@ -892,5 +892,23 @@
     "rating": null,
     "review_count": null,
     "compare_price": null
+  },
+  {
+    "slug": "hp-elitebook-1030-g3-g4-x360-i5-16gb",
+    "name": "HP EliteBook 1030 G3/G4 X360",
+    "category": "other",
+    "variant": "i5 8th Gen · 256GB SSD · 16GB RAM · Touch",
+    "description": "HP EliteBook 1030 G3/G4 X360. Intel i5 8th Gen, 256GB SSD, 16GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
+    "price": 4200,
+    "stock": 1,
+    "image_url": "/uploads/hp-elitebook-1030-g3-g4-x360.jpg",
+    "active": 1,
+    "storage": "256GB SSD",
+    "condition": "",
+    "battery": null,
+    "color": "",
+    "rating": null,
+    "review_count": null,
+    "compare_price": null
   }
 ]
