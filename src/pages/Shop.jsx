@@ -18,6 +18,39 @@ const SORTS = [
   { id: 'newest', label: 'Newest' },
 ];
 
+// Stable, seeded shuffle keyed by product id, so every visitor sees the same order.
+// Then a deterministic pass keeps variants of the same model from sitting side by side.
+function hashStr(str) {
+  let h = 2166136261;
+  for (let i = 0; i < str.length; i++) {
+    h ^= str.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+}
+
+function modelKey(p) {
+  return `${p.name}`
+    .replace(/\(.*?\)/g, '')
+    .replace(/\b\d+\s*(GB|TB)\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+}
+
+function spreadShuffle(list) {
+  const seeded = [...list].sort((a, b) => hashStr(`shop:${a.id ?? a.slug ?? a.name}`) - hashStr(`shop:${b.id ?? b.slug ?? b.name}`));
+  const out = [];
+  const rest = [...seeded];
+  while (rest.length) {
+    const last = out.length ? modelKey(out[out.length - 1]) : null;
+    let idx = rest.findIndex((p) => modelKey(p) !== last);
+    if (idx === -1) idx = 0;
+    out.push(rest.splice(idx, 1)[0]);
+  }
+  return out;
+}
+
 export default function Shop() {
   const [params, setParams] = useSearchParams();
   const [products, setProducts] = useState(null);
@@ -55,6 +88,7 @@ export default function Shop() {
       (!inStock || p.stock > 0) &&
       (!needle || `${p.name} ${p.description} ${p.variant}`.toLowerCase().includes(needle)),
     );
+    if (sort === 'newest') list = spreadShuffle(list);
     if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
