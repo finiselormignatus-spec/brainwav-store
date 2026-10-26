@@ -314,7 +314,7 @@
     "price": 35,
     "stock": 3,
     "description": "Snapchat Plus, 1 month.",
-    "image_url": "/uploads/snapchat-placeholder.jpg",
+    "image_url": "/uploads/snapchat-logo.jpg",
     "active": 1
   },
   {
@@ -326,7 +326,7 @@
     "price": 140,
     "stock": 3,
     "description": "Snapchat Plus, 1 year.",
-    "image_url": "/uploads/snapchat-placeholder.jpg",
+    "image_url": "/uploads/snapchat-logo.jpg",
     "active": 1
   },
   {
