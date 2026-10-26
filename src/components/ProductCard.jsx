@@ -44,7 +44,7 @@ export default function ProductCard({ product, index = 0, className = '' }) {
         to={`/product/${product.slug}`}
         className="group flex h-full flex-col overflow-hidden rounded-2xl border border-hairline bg-surface transition-transform duration-200 active:scale-[0.98]"
       >
-        <div className={`relative grid aspect-square place-items-center p-2 md:p-3 ${product.category === 'iphones' ? 'bg-forest/10' : 'bg-royal/10'}`}>
+        <div className={`relative grid aspect-square place-items-center p-2 md:p-3 bg-transparent`}>
           {product.image_url ? (
             <img src={product.image_url} alt="" className="h-full w-full object-contain" loading="lazy" />
           ) : (

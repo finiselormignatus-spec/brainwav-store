@@ -78,7 +78,7 @@ export default function Product() {
       <div className="grid gap-4 md:grid-cols-2 md:gap-10">
         <motion.div
           layoutId={`product-${product.slug}`}
-          className={`grid aspect-square place-items-center overflow-hidden rounded-3xl p-4 md:p-8 ${isIphone ? 'bg-forest/10' : 'bg-royal/10'}`}
+          className={`grid aspect-square place-items-center overflow-hidden rounded-3xl p-4 md:p-8 bg-transparent`}
         >
           {product.image_url ? (
             <img src={product.image_url} alt={product.name} className="h-full w-full object-contain" />
