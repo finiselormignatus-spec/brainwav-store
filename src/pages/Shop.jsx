@@ -18,17 +18,9 @@ const SORTS = [
   { id: 'newest', label: 'Newest' },
 ];
 
-// Stable, seeded shuffle keyed by product id, so every visitor sees the same order.
-// Then a deterministic pass keeps variants of the same model from sitting side by side.
-function hashStr(str) {
-  let h = 2166136261;
-  for (let i = 0; i < str.length; i++) {
-    h ^= str.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
+// Random shuffle on every page load, then a pass that keeps variants of the
+// same model from sitting side by side. Random order is drawn once per visit,
+// so it stays put while filtering but changes on refresh.
 function modelKey(p) {
   return `${p.name}`
     .replace(/\(.*?\)/g, '')
@@ -38,10 +30,25 @@ function modelKey(p) {
     .toLowerCase();
 }
 
-function spreadShuffle(list) {
-  const seeded = [...list].sort((a, b) => hashStr(`shop:${a.id ?? a.slug ?? a.name}`) - hashStr(`shop:${b.id ?? b.slug ?? b.name}`));
+function randomSpreadShuffle(list) {
+  const shuffled = (items) => {
+    const a = [...items];
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  const hasAdjacent = (arr) => arr.some((p, i) => i > 0 && modelKey(p) === modelKey(arr[i - 1]));
+  let best = null;
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const candidate = shuffled(list);
+    if (!hasAdjacent(candidate)) return candidate;
+    best = candidate;
+  }
+  // Fallback: push same-model items apart greedily (only reached if one model dominates).
+  const rest = [...best];
   const out = [];
-  const rest = [...seeded];
   while (rest.length) {
     const last = out.length ? modelKey(out[out.length - 1]) : null;
     let idx = rest.findIndex((p) => modelKey(p) !== last);
@@ -56,6 +63,7 @@ export default function Shop() {
   const [products, setProducts] = useState(null);
   const [error, setError] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
+  const [visitSeed] = useState(() => Math.random());
   const cat = params.get('cat') || 'all';
   const q = params.get('q') || '';
   const sort = params.get('sort') || 'newest';
@@ -88,11 +96,11 @@ export default function Shop() {
       (!inStock || p.stock > 0) &&
       (!needle || `${p.name} ${p.description} ${p.variant}`.toLowerCase().includes(needle)),
     );
-    if (sort === 'newest') list = spreadShuffle(list);
+    if (sort === 'newest') list = randomSpreadShuffle(list);
     if (sort === 'price-asc') list = [...list].sort((a, b) => a.price - b.price);
     if (sort === 'price-desc') list = [...list].sort((a, b) => b.price - a.price);
     return list;
-  }, [products, cat, q, max, inStock, sort]);
+  }, [products, cat, q, max, inStock, sort, visitSeed]);
 
   const filterCount = (max ? 1 : 0) + (inStock ? 1 : 0) + (sort !== 'newest' ? 1 : 0);
 
