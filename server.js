@@ -114,7 +114,8 @@ const IMAGE_REPOINTS = {
   "iphone-14-pro-max-128gb-sim": "/uploads/ph-iphone-14.jpg",
   "iphone-14-pro-128gb-sim": "/uploads/ph-iphone-14.jpg",
   "iphone-14-plus-128gb-sim": "/uploads/ph-iphone-14.jpg",
-  "iphone-13-pro-128gb-sim": "/uploads/ph-iphone-13.jpg"
+  "iphone-13-pro-128gb-sim": "/uploads/ip-13-pro.jpg",
+  "iphone-13-128gb-uk-used": "/uploads/ph-iphone-13.jpg"
 };
 
 function seedStartup() {
