@@ -65,59 +65,12 @@ function setSetting(key, value) {
 //  1. renames the 18-series rows (keyed by the old slug; a row that is already renamed is skipped)
 //  2. inserts catalog rows missing from the db, by slug; fills an empty image_url on existing rows only
 //     (never overwrites a non-empty image_url or edits other fields)
+//  2b. removes db products whose slug is not in the catalog (orphan cleanup, runs only when the catalog loaded)
 //  3. stores default settings that are not set yet
 const CATALOG_FILE = path.join(__dirname, 'src', 'data', 'catalog.json');
-const PRODUCT_RENAMES = {
-  'iphone-18-pro-256gb-brand-new-burgundy-black-glacier': { slug: 'iphone-18-pro-256gb-burgundy-black-glacier', name: 'iPhone 18 Pro 256GB (Burgundy / Black / Glacier)' },
-  'iphone-18-pro-max-256gb-brand-new-burgundy': { slug: 'iphone-18-pro-max-256gb-burgundy', name: 'iPhone 18 Pro Max 256GB (Burgundy)' },
-  'iphone-18-pro-max-256gb-brand-new-blue-white-black': { slug: 'iphone-18-pro-max-256gb-blue-white-black', name: 'iPhone 18 Pro Max 256GB (Blue / White / Black)', variant: 'Brand New · pick colour' },
-  'iphone-18-pro-max-512gb-brand-new-burgundy': { slug: 'iphone-18-pro-max-512gb-burgundy', name: 'iPhone 18 Pro Max 512GB (Burgundy)' },
-  'iphone-18-pro-max-512gb-brand-new-silver': { slug: 'iphone-18-pro-max-512gb-silver', name: 'iPhone 18 Pro Max 512GB (Silver)' },
-  'iphone-18-pro-max-512gb-brand-new-black': { slug: 'iphone-18-pro-max-512gb-black', name: 'iPhone 18 Pro Max 512GB (Black)' },
-  'iphone-18-pro-max-512gb-brand-new-white': { slug: 'iphone-18-pro-max-512gb-white', name: 'iPhone 18 Pro Max 512GB (White)' },
-};
+const PRODUCT_RENAMES = {}; // all iPhone slugs were deleted; nothing left to rename
 
-const IMAGE_REPOINTS = {
-  'iphone-11-64gb-uk-used': '/uploads/ph-iphone-xr.jpg',
-  'iphone-13-green': '/uploads/ph-iphone-13.jpg',
-  "iphone-xr-64gb-uk-used": "/uploads/ph-iphone-xr.jpg",
-  "iphone-xr-128gb-uk-used": "/uploads/ph-iphone-xr.jpg",
-  "iphone-12-64gb-uk-used": "/uploads/ph-iphone-12.jpg",
-  "iphone-12-128gb-uk-used": "/uploads/ph-iphone-12.jpg",
-  "iphone-15-128gb-uk-used": "/uploads/ph-iphone-15.jpg",
-  "iphone-16-128gb-uk-used": "/uploads/ph-iphone-16.jpg",
-  "iphone-18-pro-256gb-burgundy-black-glacier": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-14-128gb-uk-used": "/uploads/ph-iphone-14.jpg",
-  "iphone-18-pro-max-512gb-burgundy": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-18-pro-max-512gb-silver": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-18-pro-max-512gb-black": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-18-pro-max-512gb-white": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-16-pro-max-256gb-sim": "/uploads/ph-iphone-16-pro-max-256.jpg",
-  "iphone-16-pro-max-512gb-sim": "/uploads/ph-iphone-16-pro-max-256.jpg",
-  "iphone-15-pro-max-256gb-sim": "/uploads/ph-iphone-15-pro-max.jpg",
-  "iphone-18-pro-max-256gb-burgundy": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-18-pro-max-256gb-blue-white-black": "/uploads/ph-iphone-18-pro-max.jpg",
-  "iphone-17-pro-max-256gb-sim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-pro-max-512gb-sim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-pro-max-256gb-esim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-pro-256gb-sim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-pro-256gb-esim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-air-256gb-esim": "/uploads/ph-iphone-17.jpg",
-  "iphone-17-256gb-sim": "/uploads/ph-iphone-17.jpg",
-  "iphone-16-pro-256gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-16-pro-128gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-16-plus-256gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-16-plus-128gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-16-256gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-16-128gb-sim": "/uploads/ph-iphone-16.jpg",
-  "iphone-15-pro-256gb-sim": "/uploads/ph-iphone-15.jpg",
-  "iphone-15-128gb-sim": "/uploads/ph-iphone-15.jpg",
-  "iphone-14-pro-max-128gb-sim": "/uploads/ph-iphone-14.jpg",
-  "iphone-14-pro-128gb-sim": "/uploads/ph-iphone-14.jpg",
-  "iphone-14-plus-128gb-sim": "/uploads/ph-iphone-14.jpg",
-  "iphone-13-pro-128gb-sim": "/uploads/ip-13-pro.jpg",
-  "iphone-13-128gb-uk-used": "/uploads/ph-iphone-13.jpg"
-};
+const IMAGE_REPOINTS = {}; // all entries pointed at deleted iPhone slugs
 
 function seedStartup() {
   let items = [];
@@ -144,6 +97,12 @@ function seedStartup() {
         if (existing.active !== 1) patch.active = 1;
         if (Object.keys(patch).length) db.update('products', (r) => r.slug === p.slug, patch);
       }
+    }
+    // Orphan cleanup: delete db products whose slug is no longer in the catalog (e.g. removed iPhones).
+    // Guarded so a missing/unreadable catalog never wipes the store.
+    if (items.length > 0) {
+      const catalogSlugs = new Set(items.map((p) => p.slug));
+      db.remove('products', (r) => !catalogSlugs.has(r.slug));
     }
     for (const [slug, img] of Object.entries(IMAGE_REPOINTS)) {
       const row = db.find('products', (r) => r.slug === slug);
