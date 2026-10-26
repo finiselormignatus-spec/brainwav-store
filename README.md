@@ -30,10 +30,22 @@ Customers create an account at `/register` before checkout. Admin and customer l
 - Set `DATA_DIR=/some/path` to keep the database outside the project folder.
 
 ## Email notifications (optional)
-The server emails customers a welcome message on registration and an order confirmation (with the order reference, items and totals) when an order is placed. Mail is sent in the background, so it never slows checkout, and failures are logged without stopping the order.
+The server emails customers a welcome message on registration and an order confirmation (with the order reference, items and totals) when an order is placed. Mail is sent in the background, so it never slows checkout, and failures are logged without stopping the signup or the order.
 
-1. Copy `.env.example` to `.env` in the project folder.
-2. Fill in the lines:
+Two providers are supported. The server picks one in this order:
+1. **Resend (recommended on Render).** Used when `RESEND_API_KEY` is set. It sends over HTTPS, so it works on hosts that block SMTP ports (Render's free plan does).
+2. **SMTP.** Used when `RESEND_API_KEY` is empty and `SMTP_USER` and `SMTP_PASS` are set.
+3. **Off.** If neither is set, mail is skipped and logged. The store still works and orders still save.
+
+Resend setup:
+```
+RESEND_API_KEY=re_your_key
+RESEND_FROM="Marc Brainwav Premium Deals <orders@yourdomain.com>"
+```
+- Create the key at resend.com, under API Keys.
+- `RESEND_FROM` must be an address on a domain you verified in Resend. Without it, the server uses Resend's test sender `onboarding@resend.dev`, which on the free tier only delivers to the email address of your Resend account.
+
+SMTP setup (for a server that allows SMTP):
 ```
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=587
@@ -43,7 +55,7 @@ SMTP_FROM="Marc Brainwav Premium Deals <you@gmail.com>"
 ```
 - Gmail: create an app password (Google Account, Security, App passwords). Use it as `SMTP_PASS`, not your normal password.
 - Any other SMTP provider works the same way: set its host, port, user and password.
-- Leave `SMTP_USER` empty and email is off. The store still works and orders still save.
+- Leave `RESEND_API_KEY`, `SMTP_USER` and `SMTP_PASS` empty and email is off.
 
 ## Payments
 - Default: manual payment. Customers see your CashApp, Zelle, PayPal and Venmo handles and place an order marked pending.
@@ -56,6 +68,6 @@ WhatsApp +233595484295, call 0501994337, Snapchat keli_brainwav21.
 - `server.js`: API and static server (Express + JSON-file store, no native build tools)
 - `uploads/`: product photos uploaded from the admin dashboard (Products > Add/Edit > Product photo). Served at `/uploads/<file>`. Only JPG, PNG and WebP are accepted, checked by the file's contents (not its name), max 5MB, saved under random filenames. Upload needs the admin login. Set `UPLOAD_DIR` to store them somewhere else (for example a persistent disk on Render). Back this folder up with the database, because the photos are not in git.
 - `src/`: React storefront and admin (Vite)
-- `mailer.js`: email notifications (nodemailer, SMTP from `.env`)
+- `mailer.js`: email notifications (Resend HTTPS API when `RESEND_API_KEY` is set, otherwise nodemailer SMTP from `.env`)
 - `src/data/catalog.json`: seed products (edit or replace freely; the seed runs only on an empty database)
 - `data/store.db`: created at runtime, not in the zip

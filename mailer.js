@@ -1,5 +1,6 @@
-// Transactional email (welcome + order confirmation) over any SMTP server.
-// Config comes from .env (see README). When SMTP_USER or SMTP_PASS is empty, mail is skipped and logged.
+// Transactional email (welcome + order confirmation).
+// Provider order: 1) Resend HTTPS API when RESEND_API_KEY is set (works on hosts that block SMTP ports),
+// 2) SMTP via nodemailer when SMTP_USER and SMTP_PASS are set, 3) otherwise skip and log.
 // Sends are fire-and-forget: callers never await them, so slow mail cannot block checkout.
 import nodemailer from 'nodemailer';
 
@@ -7,6 +8,10 @@ const SHOP = 'Marc Brainwav Premium Deals';
 const CONTACT = 'WhatsApp +233595484295, call 0501994337, Snapchat keli_brainwav21';
 
 let transporter = null;
+
+function resendConfigured() {
+  return Boolean(process.env.RESEND_API_KEY);
+}
 
 function smtpConfigured() {
   return Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
@@ -29,10 +34,32 @@ function getTransporter() {
   return transporter;
 }
 
+// POST one message to Resend. Returns the Resend message id. Throws on any non-2xx response.
+async function sendEmail({ from, to, subject, html, text }) {
+  const res = await fetch('https://api.resend.com/emails', {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ from, to, subject, html, text }),
+    signal: AbortSignal.timeout(15000),
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(`Resend ${res.status}: ${body && body.message ? body.message : JSON.stringify(body)}`);
+  }
+  return body.id;
+}
+
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = (n) => `GH₵ ${Number(n || 0).toLocaleString('en-GH')}`;
 
 function from() {
+  if (resendConfigured()) {
+    // Resend only accepts senders on a verified domain. Without RESEND_FROM it uses Resend's test sender.
+    return process.env.RESEND_FROM || `${SHOP} <onboarding@resend.dev>`;
+  }
   return process.env.SMTP_FROM || `${SHOP} <${process.env.SMTP_USER}>`;
 }
 
@@ -100,14 +127,20 @@ function dispatch(build, data, label, key) {
   }
   setImmediate(async () => {
     try {
+      if (resendConfigured()) {
+        const message = build(data);
+        const id = await sendEmail(message);
+        console.log(`[mail] ${label} sent to ${data.email} via Resend (${id || 'no id'})`);
+        return;
+      }
       if (!smtpConfigured()) {
-        console.log(`[mail] ${label} to ${data.email} skipped: SMTP_USER/SMTP_PASS not set`);
+        console.log(`[mail] ${label} to ${data.email} skipped: no RESEND_API_KEY and SMTP_USER/SMTP_PASS not set`);
         return;
       }
       const t = getTransporter();
       if (!t) return;
       const info = await t.sendMail(build(data));
-      console.log(`[mail] ${label} sent to ${data.email}${info && info.messageId ? ` (${info.messageId})` : ''}`);
+      console.log(`[mail] ${label} sent to ${data.email} via SMTP${info && info.messageId ? ` (${info.messageId})` : ''}`);
     } catch (err) {
       if (key) sentKeys.delete(key);
       console.error(`[mail] ${label} to ${data.email} failed:`, err && err.message ? err.message : err);
