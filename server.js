@@ -352,7 +352,8 @@ api.post('/customers/register', wrap((req, res) => {
   });
   const customer = { id, name, email, phone, address: '' };
   res.status(201).json({ token: issueCustomerSession(id), customer });
-  sendWelcome({ name, email });
+  // Welcome mail is fire-and-forget; a failure here must never affect signup.
+  try { sendWelcome({ name, email }); } catch (err) { console.error('[mail] welcome skipped:', err && err.message ? err.message : err); }
 }));
 
 api.post('/customers/login', wrap((req, res) => {
@@ -442,7 +443,7 @@ api.post('/orders', requireCustomer, wrap((req, res) => {
   const result = placeTx();
   res.status(201).json(result);
   // Confirmation to the address on the order. Fire-and-forget: never blocks checkout.
-  sendOrderConfirmation({ ref: result.ref, customer_name: name, email: req.customer.email || email, lines: result.lines, total: result.total, payment_method: method, status: result.status });
+  try { sendOrderConfirmation({ ref: result.ref, customer_name: name, email: req.customer.email || email, lines: result.lines, total: result.total, payment_method: method, status: result.status }); } catch (err) { console.error('[mail] order confirmation skipped:', err && err.message ? err.message : err); }
 }));
 
 // Public order lookup by reference: no contact details are returned.

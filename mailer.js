@@ -1,5 +1,5 @@
 // Transactional email (welcome + order confirmation) over any SMTP server.
-// Config comes from .env (see README). When SMTP_USER is empty, mail is a silent no-op.
+// Config comes from .env (see README). When SMTP_USER or SMTP_PASS is empty, mail is skipped and logged.
 // Sends are fire-and-forget: callers never await them, so slow mail cannot block checkout.
 import nodemailer from 'nodemailer';
 
@@ -7,16 +7,15 @@ const SHOP = 'Marc Brainwav Premium Deals';
 const CONTACT = 'WhatsApp +233595484295, call 0501994337, Snapchat keli_brainwav21';
 
 let transporter = null;
-let warnedOff = false;
+
+function smtpConfigured() {
+  return Boolean(process.env.SMTP_USER && process.env.SMTP_PASS);
+}
 
 function getTransporter() {
   if (transporter !== null) return transporter;
   const user = process.env.SMTP_USER || '';
-  if (!user) {
-    if (!warnedOff) {
-      console.log('[mail] SMTP_USER is not set, email notifications are off.');
-      warnedOff = true;
-    }
+  if (!smtpConfigured()) {
     transporter = false;
     return transporter;
   }
@@ -42,7 +41,7 @@ function welcomeMessage({ name, email }) {
   const text = [
     `Hi ${name},`,
     '',
-    `Thanks for creating an account with ${SHOP}. You can now order iPhones, subscriptions and gift cards and track your orders from your account.`,
+    `Thanks for creating an account with ${SHOP}. You can now shop phones, laptops and subscriptions, and track your orders from your account at any time.`,
     '',
     `Questions? ${CONTACT}`,
     '',
@@ -50,7 +49,7 @@ function welcomeMessage({ name, email }) {
   ].join('\n');
   const html = `<div style="font-family:Arial,sans-serif;color:#0b2a1b">
 <h2 style="margin:0 0 12px">Welcome, ${esc(name)}</h2>
-<p>Thanks for creating an account with <strong>${SHOP}</strong>. You can now order iPhones, subscriptions and gift cards and track your orders from your account.</p>
+<p>Thanks for creating an account with <strong>${SHOP}</strong>. You can now shop phones, laptops and subscriptions, and track your orders from your account at any time.</p>
 <p>Questions? ${esc(CONTACT)}</p>
 <p><em>Your trust, our reputation.</em></p></div>`;
   return { from: from(), to: email, subject, text, html };
@@ -86,25 +85,48 @@ function orderMessage(order) {
   return { from: from(), to: order.email, subject, text, html };
 }
 
-// Fire-and-forget. Returns immediately; failures are logged, never thrown.
-function dispatch(build, data, label) {
+// Keys already sent in this process, so a retried request cannot send the same mail twice.
+const sentKeys = new Set();
+
+// Fire-and-forget. Returns immediately; failures and skips are logged, never thrown.
+function dispatch(build, data, label, key) {
   if (!data || !data.email) return;
+  if (key) {
+    if (sentKeys.has(key)) {
+      console.log(`[mail] ${label} to ${data.email} already sent, skipping duplicate`);
+      return;
+    }
+    sentKeys.add(key);
+  }
   setImmediate(async () => {
     try {
+      if (!smtpConfigured()) {
+        console.log(`[mail] ${label} to ${data.email} skipped: SMTP_USER/SMTP_PASS not set`);
+        return;
+      }
       const t = getTransporter();
       if (!t) return;
       const info = await t.sendMail(build(data));
       console.log(`[mail] ${label} sent to ${data.email}${info && info.messageId ? ` (${info.messageId})` : ''}`);
     } catch (err) {
+      if (key) sentKeys.delete(key);
       console.error(`[mail] ${label} to ${data.email} failed:`, err && err.message ? err.message : err);
     }
   });
 }
 
 export function sendWelcome(customer) {
-  dispatch(welcomeMessage, customer, 'welcome');
+  try {
+    dispatch(welcomeMessage, customer, 'welcome', customer && customer.email ? `welcome:${String(customer.email).toLowerCase()}` : null);
+  } catch (err) {
+    console.error('[mail] welcome could not be queued:', err && err.message ? err.message : err);
+  }
 }
 
 export function sendOrderConfirmation(order) {
-  dispatch(orderMessage, order, 'order confirmation');
+  try {
+    dispatch(orderMessage, order, 'order confirmation', order && order.ref ? `order:${order.ref}` : null);
+  } catch (err) {
+    console.error('[mail] order confirmation could not be queued:', err && err.message ? err.message : err);
+  }
 }
