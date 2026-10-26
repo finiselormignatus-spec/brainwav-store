@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: brainwav-store
+    runtime: node
+    plan: starter            # persistent disks need a paid plan
+    buildCommand: npm install && npm run build
+    # Copy the photos shipped in git onto the disk (never overwrites), then start.
+    startCommand: mkdir -p /var/data/uploads && cp -n uploads/* /var/data/uploads/ ; npm start
+    healthCheckPath: /
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: DATA_DIR
+        value: /var/data/data
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+    disk:
+      name: store-data
+      mountPath: /var/data
+      sizeGB: 1
