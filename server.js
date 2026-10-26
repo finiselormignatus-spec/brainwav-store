@@ -78,6 +78,8 @@ const PRODUCT_RENAMES = {
 };
 
 const IMAGE_REPOINTS = {
+  'iphone-11-64gb-uk-used': '/uploads/ph-iphone-xr.jpg',
+  'iphone-13-green': '/uploads/ph-iphone-13.jpg',
   "iphone-xr-64gb-uk-used": "/uploads/ph-iphone-xr.jpg",
   "iphone-xr-128gb-uk-used": "/uploads/ph-iphone-xr.jpg",
   "iphone-12-64gb-uk-used": "/uploads/ph-iphone-12.jpg",
