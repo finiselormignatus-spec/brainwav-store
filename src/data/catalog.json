@@ -238,5 +238,27 @@
     "rating": null,
     "review_count": null,
     "compare_price": null
+  },
+  {
+    "slug": "ps4-slim",
+    "name": "PS4 Slim",
+    "category": "other",
+    "variant": "500GB · 8-10 games incl FC27 · 1 controller",
+    "price": 3200,
+    "stock": 1,
+    "description": "PS4 Slim, 500GB, 8-10 games incl FC27, 1 controller.",
+    "image_url": "/uploads/ps4-slim.jpg",
+    "active": 1
+  },
+  {
+    "slug": "ps4-standard",
+    "name": "PS4 Standard",
+    "category": "other",
+    "variant": "500GB · games · 1 controller",
+    "price": 2600,
+    "stock": 1,
+    "description": "PS4 Standard, 500GB, games, 1 controller.",
+    "image_url": "/uploads/ps4-standard.jpg",
+    "active": 1
   }
 ]
