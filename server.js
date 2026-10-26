@@ -22,7 +22,12 @@ import { sendWelcome, sendOrderConfirmation } from './mailer.js';
 })();
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
+let DATA_DIR = process.env.DATA_DIR || '';
+if (!DATA_DIR) {
+  const diskDir = '/var/data/data';
+  try { fs.mkdirSync(diskDir, { recursive: true }); DATA_DIR = diskDir; }
+  catch { DATA_DIR = path.join(__dirname, 'data'); }
+}
 const DIST = path.join(__dirname, 'dist');
 // Product photos uploaded from the admin dashboard. Served at /uploads/*. Override with UPLOAD_DIR.
 const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(__dirname, 'uploads');
