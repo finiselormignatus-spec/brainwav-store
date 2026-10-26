@@ -30,11 +30,6 @@ function getTransporter() {
   return transporter;
 }
 
-// Test hook: lets a local test swap in a jsonTransport so nothing is really sent.
-export function setTransportForTests(t) {
-  transporter = t;
-}
-
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const money = (n) => `GH₵ ${Number(n || 0).toLocaleString('en-GH')}`;
 
@@ -113,6 +108,3 @@ export function sendWelcome(customer) {
 export function sendOrderConfirmation(order) {
   dispatch(orderMessage, order, 'order confirmation');
 }
-
-// Exposed so tests can compose the messages without sending.
-export const _compose = { welcome: welcomeMessage, order: orderMessage };

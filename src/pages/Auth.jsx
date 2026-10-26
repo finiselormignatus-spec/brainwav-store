@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { registerCustomer, loginCustomer } from '../lib/customers.js';
-import { useCustomer } from '../lib/useCustomer.js';
 
 // Only allow same-site relative redirects (e.g. /checkout), never external URLs.
 export function safeNext(raw) {
@@ -138,11 +137,3 @@ export function AccountRequired({ next = '/checkout' }) {
   );
 }
 
-export function RequireCustomer({ children }) {
-  const { customer, loading } = useCustomer();
-  if (loading) return <div className="mx-auto max-w-md px-4 py-20 text-center text-muted">Loading…</div>;
-  if (!customer) return <AccountRequired />;
-  return children;
-}
-
-export { useCustomer };

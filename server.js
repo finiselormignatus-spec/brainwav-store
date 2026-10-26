@@ -61,35 +61,12 @@ function setSetting(key, value) {
   if (!n) db.insert('settings', { key, value });
 }
 
-// First run only: seed the catalog from src/data/catalog.json when the products table is empty.
-function seedIfEmpty() {
-  if (db.count('products') === 0) {
-    const file = path.join(__dirname, 'src', 'data', 'catalog.json');
-    const items = JSON.parse(fs.readFileSync(file, 'utf8'));
-    db.transaction(() => {
-      for (const p of items) {
-        if (db.find('products', (r) => r.slug === p.slug)) continue;
-        db.insert('products', {
-          slug: p.slug, name: p.name, category: p.category, variant: p.variant || '', description: p.description || '',
-          price: Number(p.price) || 0, stock: Number(p.stock) || 0, image_url: p.image_url || '',
-          active: p.active === 0 ? 0 : 1, storage: p.storage || '', condition: p.condition || '',
-          battery: p.battery ?? null, color: p.color || '', rating: p.rating ?? null, review_count: p.review_count ?? null,
-          compare_price: null, created_at: nowStamp(),
-        });
-      }
-    });
-  }
-  db.transaction(() => {
-    for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) {
-      if (getSetting(k) === undefined) db.insert('settings', { key: k, value: v });
-    }
-  });
-}
-seedIfEmpty();
-
-// One-time renames for the 18-series rows, which used to share the same name and variant
-// (so the shop showed what looked like duplicate cards). Keyed by the old slug; a row that is
-// already renamed is skipped, so this is safe on every start.
+// Startup seed. Idempotent, so it runs on every start and changes nothing once applied:
+//  1. renames the 18-series rows (keyed by the old slug; a row that is already renamed is skipped)
+//  2. inserts catalog rows missing from the db, by slug; fills an empty image_url on existing rows only
+//     (never overwrites a non-empty image_url or edits other fields)
+//  3. stores default settings that are not set yet
+const CATALOG_FILE = path.join(__dirname, 'src', 'data', 'catalog.json');
 const PRODUCT_RENAMES = {
   'iphone-18-pro-256gb-brand-new-burgundy-black-glacier': { slug: 'iphone-18-pro-256gb-burgundy-black-glacier', name: 'iPhone 18 Pro 256GB (Burgundy / Black / Glacier)' },
   'iphone-18-pro-max-256gb-brand-new-burgundy': { slug: 'iphone-18-pro-max-256gb-burgundy', name: 'iPhone 18 Pro Max 256GB (Burgundy)' },
@@ -99,41 +76,36 @@ const PRODUCT_RENAMES = {
   'iphone-18-pro-max-512gb-brand-new-black': { slug: 'iphone-18-pro-max-512gb-black', name: 'iPhone 18 Pro Max 512GB (Black)' },
   'iphone-18-pro-max-512gb-brand-new-white': { slug: 'iphone-18-pro-max-512gb-white', name: 'iPhone 18 Pro Max 512GB (White)' },
 };
-function applyProductRenames() {
+
+function seedStartup() {
+  let items = [];
+  try { items = JSON.parse(fs.readFileSync(CATALOG_FILE, 'utf8')); } catch { /* no catalog file: nothing to insert */ }
   db.transaction(() => {
     for (const [oldSlug, next] of Object.entries(PRODUCT_RENAMES)) {
-      const row = db.find('products', (r) => r.slug === oldSlug);
-      if (!row) continue;
+      if (!db.find('products', (r) => r.slug === oldSlug)) continue;
       if (db.find('products', (r) => r.slug === next.slug)) continue;
       db.update('products', (r) => r.slug === oldSlug, { slug: next.slug, name: next.name, ...(next.variant ? { variant: next.variant } : {}) });
     }
-  });
-}
-applyProductRenames();
-
-// Idempotent catalog sync: inserts catalog rows missing from the db (by slug) and fills an empty
-// image_url on existing rows. Safe on every start; never overwrites a non-empty image_url or edits other fields.
-function syncCatalogFromFile() {
-  const file = path.join(__dirname, 'src', 'data', 'catalog.json');
-  let items;
-  try { items = JSON.parse(fs.readFileSync(file, 'utf8')); } catch { return; }
-  db.transaction(() => {
     for (const p of items) {
       const existing = db.find('products', (r) => r.slug === p.slug);
       if (!existing) {
         db.insert('products', {
-          slug: p.slug, name: p.name, category: p.category, variant: p.variant, price: p.price, stock: p.stock,
-          description: p.description, storage: p.storage, condition: p.condition, battery: p.battery, color: p.color,
-          image_url: p.image_url || '', active: p.active, rating: p.rating ?? null, review_count: p.review_count ?? null,
+          slug: p.slug, name: p.name, category: p.category, variant: p.variant || '', description: p.description || '',
+          price: Number(p.price) || 0, stock: Number(p.stock) || 0, image_url: p.image_url || '',
+          active: p.active === 0 ? 0 : 1, storage: p.storage || '', condition: p.condition || '',
+          battery: p.battery ?? null, color: p.color || '', rating: p.rating ?? null, review_count: p.review_count ?? null,
           compare_price: p.compare_price ?? null, created_at: nowStamp(),
         });
       } else if (!existing.image_url && p.image_url) {
         db.update('products', (r) => r.slug === p.slug, { image_url: p.image_url });
       }
     }
+    for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) {
+      if (getSetting(k) === undefined) db.insert('settings', { key: k, value: v });
+    }
   });
 }
-syncCatalogFromFile();
+seedStartup();
 
 // ---------- helpers ----------
 class HttpError extends Error {

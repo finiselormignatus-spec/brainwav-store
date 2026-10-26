@@ -1,7 +1,5 @@
 import { readCart, writeCart, cartKey } from './store.js';
 
-export const isIphone = (item) => item.category === 'iphones';
-
 export function addToCart(item) {
   const cart = readCart();
   const key = cartKey(item.productId, item.variant);
