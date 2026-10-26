@@ -104,6 +104,11 @@ function seedStartup() {
       if (p.category !== 'laptops') continue;
       db.update('products', (r) => r.slug === p.slug && r.category !== 'laptops', { category: 'laptops' });
     }
+    // Stock repoint by slug: laptop and PS4 rows set to stock 5 (idempotent).
+    for (const p of items) {
+      if (!(p.slug.startsWith('hp-elitebook') || p.slug.startsWith('ps4-'))) continue;
+      db.update('products', (r) => r.slug === p.slug && r.stock !== 5, { stock: 5 });
+    }
     // Orphan cleanup: delete db products whose slug is no longer in the catalog (e.g. removed iPhones).
     // Guarded so a missing/unreadable catalog never wipes the store.
     if (items.length > 0) {
