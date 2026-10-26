@@ -41,7 +41,14 @@ export class JsonStore {
     fs.mkdirSync(dir, { recursive: true });
     const tmp = path.join(dir, `.${path.basename(this.file)}.${process.pid}.${crypto.randomBytes(6).toString('hex')}.tmp`);
     try {
-      fs.writeFileSync(tmp, JSON.stringify(this.state), 'utf8');
+      // fsync the temp file before rename so the new contents are on disk before they replace the old file.
+      const fd = fs.openSync(tmp, 'w');
+      try {
+        fs.writeFileSync(fd, JSON.stringify(this.state), 'utf8');
+        fs.fsyncSync(fd);
+      } finally {
+        fs.closeSync(fd);
+      }
       try {
         fs.renameSync(tmp, this.file);
       } catch (e) {

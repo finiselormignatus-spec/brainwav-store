@@ -66,7 +66,7 @@ function setSetting(key, value) {
 //  2. inserts catalog rows missing from the db, by slug; fills an empty image_url on existing rows only
 //     (never overwrites a non-empty image_url or edits other fields)
 //  2a. repoints catalog rows whose category changed (by slug)
-//  2b. removes db products whose slug is not in the catalog (orphan cleanup, runs only when the catalog loaded)
+//  Never deletes db rows and never resets stock or active flags: admin edits survive restarts.
 //  3. stores default settings that are not set yet
 const CATALOG_FILE = path.join(__dirname, 'src', 'data', 'catalog.json');
 const PRODUCT_RENAMES = {}; // all iPhone slugs were deleted; nothing left to rename
@@ -95,7 +95,6 @@ function seedStartup() {
       } else {
         const patch = {};
         if (!existing.image_url && p.image_url) patch.image_url = p.image_url;
-        if (existing.active !== 1) patch.active = 1;
         if (Object.keys(patch).length) db.update('products', (r) => r.slug === p.slug, patch);
       }
     }
@@ -103,17 +102,6 @@ function seedStartup() {
     for (const p of items) {
       if (p.category !== 'laptops') continue;
       db.update('products', (r) => r.slug === p.slug && r.category !== 'laptops', { category: 'laptops' });
-    }
-    // Stock repoint by slug: laptop and PS4 rows set to stock 5 (idempotent).
-    for (const p of items) {
-      if (!(p.slug.startsWith('hp-elitebook') || p.slug.startsWith('ps4-'))) continue;
-      db.update('products', (r) => r.slug === p.slug && r.stock !== 5, { stock: 5 });
-    }
-    // Orphan cleanup: delete db products whose slug is no longer in the catalog (e.g. removed iPhones).
-    // Guarded so a missing/unreadable catalog never wipes the store.
-    if (items.length > 0) {
-      const catalogSlugs = new Set(items.map((p) => p.slug));
-      db.remove('products', (r) => !catalogSlugs.has(r.slug));
     }
     for (const [slug, img] of Object.entries(IMAGE_REPOINTS)) {
       const row = db.find('products', (r) => r.slug === slug);
