@@ -8,6 +8,7 @@ import { listProducts } from '../lib/store.js';
 const CATS = [
   { id: 'all', label: 'All' },
   { id: 'iphones', label: 'iPhones' },
+  { id: 'laptops', label: 'Laptops' },
   { id: 'subscriptions', label: 'Subscriptions' },
   { id: 'other', label: 'Other' },
 ];

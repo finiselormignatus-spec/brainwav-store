@@ -31,7 +31,7 @@ const PORT = Number(process.env.PORT) || 3000;
 const CUSTOMER_MS = 30 * 24 * 60 * 60 * 1000;
 const ADMIN_MS = 8 * 60 * 60 * 1000;
 const ITERATIONS = 150000;
-const CATEGORIES = ['iphones', 'subscriptions', 'giftcards'];
+const CATEGORIES = ['iphones', 'laptops', 'subscriptions', 'giftcards', 'other'];
 const ORDER_STATUSES = ['pending', 'paid', 'delivered', 'cancelled'];
 const SETTING_KEYS = ['paystack_enabled', 'paystack_public_key'];
 
@@ -65,6 +65,7 @@ function setSetting(key, value) {
 //  1. renames the 18-series rows (keyed by the old slug; a row that is already renamed is skipped)
 //  2. inserts catalog rows missing from the db, by slug; fills an empty image_url on existing rows only
 //     (never overwrites a non-empty image_url or edits other fields)
+//  2a. repoints catalog rows whose category changed (by slug)
 //  2b. removes db products whose slug is not in the catalog (orphan cleanup, runs only when the catalog loaded)
 //  3. stores default settings that are not set yet
 const CATALOG_FILE = path.join(__dirname, 'src', 'data', 'catalog.json');
@@ -97,6 +98,11 @@ function seedStartup() {
         if (existing.active !== 1) patch.active = 1;
         if (Object.keys(patch).length) db.update('products', (r) => r.slug === p.slug, patch);
       }
+    }
+    // Category repoint by slug: HP EliteBook rows move from 'other' to 'laptops' (idempotent).
+    for (const p of items) {
+      if (p.category !== 'laptops') continue;
+      db.update('products', (r) => r.slug === p.slug && r.category !== 'laptops', { category: 'laptops' });
     }
     // Orphan cleanup: delete db products whose slug is no longer in the catalog (e.g. removed iPhones).
     // Guarded so a missing/unreadable catalog never wipes the store.

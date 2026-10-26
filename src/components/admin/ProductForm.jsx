@@ -130,6 +130,7 @@ export default function ProductForm({ value, onClose, onSaved }) {
           Category
           <select value={f.category} onChange={set('category')} className="min-h-[46px] rounded-xl border border-hairline bg-surface px-3 font-normal">
             <option value="iphones">iPhones</option>
+            <option value="laptops">Laptops</option>
             <option value="subscriptions">Subscriptions</option>
             <option value="giftcards">Gift Cards</option>
             <option value="other">Other</option>

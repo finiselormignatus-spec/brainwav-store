@@ -134,7 +134,7 @@
   {
     "slug": "hp-elitebook-1030-g3-g4-x360-i5-16gb",
     "name": "HP EliteBook 1030 G3/G4 X360",
-    "category": "other",
+    "category": "laptops",
     "variant": "i5 8th Gen · 256GB SSD · 16GB RAM · Touch",
     "description": "HP EliteBook 1030 G3/G4 X360. Intel i5 8th Gen, 256GB SSD, 16GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
     "price": 4200,
@@ -152,7 +152,7 @@
   {
     "slug": "hp-elitebook-1030-g3-g4-x360-i5-8gb",
     "name": "HP EliteBook 1030 G3/G4 X360",
-    "category": "other",
+    "category": "laptops",
     "variant": "i5 8th Gen · 256GB SSD · 8GB RAM · Touch",
     "description": "HP EliteBook 1030 G3/G4 X360. Intel i5 8th Gen, 256GB SSD, 8GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
     "price": 3999,
@@ -170,7 +170,7 @@
   {
     "slug": "hp-elitebook-1040-g6-x360-i7-16gb",
     "name": "HP EliteBook 1040 G6 X360",
-    "category": "other",
+    "category": "laptops",
     "variant": "i7 8th Gen · 512GB SSD · 16GB RAM · Touch",
     "description": "HP EliteBook 1040 G6 X360. Intel i7 8th Gen, 512GB SSD, 16GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
     "price": 4999,
@@ -188,7 +188,7 @@
   {
     "slug": "hp-elitebook-1030-g3-x360-i7-16gb",
     "name": "HP EliteBook 1030 G3 X360",
-    "category": "other",
+    "category": "laptops",
     "variant": "i7 8th Gen · 512GB SSD · 16GB RAM · Touch",
     "description": "HP EliteBook 1030 G3 X360. Intel i7 8th Gen, 512GB SSD, 16GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
     "price": 4800,
@@ -206,7 +206,7 @@
   {
     "slug": "hp-elitebook-830-g7-i5-8gb",
     "name": "HP EliteBook 830 G7",
-    "category": "other",
+    "category": "laptops",
     "variant": "i5 10th Gen · 256GB SSD · 8GB RAM",
     "description": "HP EliteBook 830 G7. Intel i5 10th Gen, 256GB SSD, 8GB RAM, Face ID, keyboard light, solid battery, original charger.",
     "price": 3800,
@@ -224,7 +224,7 @@
   {
     "slug": "hp-elitebook-830-g7-x360-i5-16gb",
     "name": "HP EliteBook 830 G7 X360",
-    "category": "other",
+    "category": "laptops",
     "variant": "i5 10th Gen · 512GB SSD · 16GB RAM · Touch",
     "description": "HP EliteBook 830 G7 X360. Intel i5 10th Gen, 512GB SSD, 16GB RAM, touch X360, Face ID, keyboard light, solid battery, original charger.",
     "price": 4800,
