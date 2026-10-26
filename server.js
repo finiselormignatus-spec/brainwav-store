@@ -77,6 +77,36 @@ const PRODUCT_RENAMES = {
   'iphone-18-pro-max-512gb-brand-new-white': { slug: 'iphone-18-pro-max-512gb-white', name: 'iPhone 18 Pro Max 512GB (White)' },
 };
 
+const IMAGE_REPOINTS = {
+  "iphone-xr-64gb-uk-used": "/uploads/ph-iphone-xr.jpg",
+  "iphone-xr-128gb-uk-used": "/uploads/ph-iphone-xr.jpg",
+  "iphone-12-64gb-uk-used": "/uploads/ph-iphone-12.jpg",
+  "iphone-12-128gb-uk-used": "/uploads/ph-iphone-12.jpg",
+  "iphone-15-128gb-uk-used": "/uploads/ph-iphone-15.jpg",
+  "iphone-16-128gb-uk-used": "/uploads/ph-iphone-16.jpg",
+  "iphone-18-pro-max-256gb-burgundy": "/uploads/ph-iphone-18-pro-max.jpg",
+  "iphone-18-pro-max-256gb-blue-white-black": "/uploads/ph-iphone-18-pro-max.jpg",
+  "iphone-17-pro-max-256gb-sim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-pro-max-512gb-sim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-pro-max-256gb-esim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-pro-256gb-sim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-pro-256gb-esim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-air-256gb-esim": "/uploads/ph-iphone-17.jpg",
+  "iphone-17-256gb-sim": "/uploads/ph-iphone-17.jpg",
+  "iphone-16-pro-256gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-16-pro-128gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-16-plus-256gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-16-plus-128gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-16-256gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-16-128gb-sim": "/uploads/ph-iphone-16.jpg",
+  "iphone-15-pro-256gb-sim": "/uploads/ph-iphone-15.jpg",
+  "iphone-15-128gb-sim": "/uploads/ph-iphone-15.jpg",
+  "iphone-14-pro-max-128gb-sim": "/uploads/ph-iphone-14.jpg",
+  "iphone-14-pro-128gb-sim": "/uploads/ph-iphone-14.jpg",
+  "iphone-14-plus-128gb-sim": "/uploads/ph-iphone-14.jpg",
+  "iphone-13-pro-128gb-sim": "/uploads/ph-iphone-13.jpg"
+};
+
 function seedStartup() {
   let items = [];
   try { items = JSON.parse(fs.readFileSync(CATALOG_FILE, 'utf8')); } catch { /* no catalog file: nothing to insert */ }
@@ -99,6 +129,10 @@ function seedStartup() {
       } else if (!existing.image_url && p.image_url) {
         db.update('products', (r) => r.slug === p.slug, { image_url: p.image_url });
       }
+    }
+    for (const [slug, img] of Object.entries(IMAGE_REPOINTS)) {
+      const row = db.find('products', (r) => r.slug === slug);
+      if (row && row.image_url !== img) db.update('products', (r) => r.slug === slug, { image_url: img });
     }
     for (const [k, v] of Object.entries(DEFAULT_SETTINGS)) {
       if (getSetting(k) === undefined) db.insert('settings', { key: k, value: v });
