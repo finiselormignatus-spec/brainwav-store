@@ -92,6 +92,8 @@ const IMAGE_REPOINTS = {
   "iphone-18-pro-max-512gb-black": "/uploads/ip-18-pro-max-placeholder.jpg",
   "iphone-18-pro-max-512gb-white": "/uploads/ip-18-pro-max-placeholder.jpg",
   "iphone-16-pro-max-256gb-sim": "/uploads/ph-iphone-16-pro-max-256.jpg",
+  "iphone-16-pro-max-512gb-sim": "/uploads/ph-iphone-16-pro-max-256.jpg",
+  "iphone-15-pro-max-256gb-sim": "/uploads/ph-iphone-15-pro-max.jpg",
   "iphone-18-pro-max-256gb-burgundy": "/uploads/ph-iphone-18-pro-max.jpg",
   "iphone-18-pro-max-256gb-blue-white-black": "/uploads/ph-iphone-18-pro-max.jpg",
   "iphone-17-pro-max-256gb-sim": "/uploads/ph-iphone-17.jpg",
