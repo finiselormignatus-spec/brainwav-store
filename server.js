@@ -575,8 +575,22 @@ api.delete('/admin/products/:id', requireAdmin, wrap((req, res) => {
   res.json({ ok: true });
 }));
 
-api.get('/admin/orders', requireAdmin, wrap((_req, res) => {
-  res.json(ordersNewestFirst(() => true).slice(0, 200).map(orderOut));
+// Optional ?q= filters by order ref / tracking code, customer name, phone, email or address (case-insensitive).
+// Phone matching ignores spaces, dashes and "+" so "0244 123 456" finds "+233244123456" style entries.
+api.get('/admin/orders', requireAdmin, wrap((req, res) => {
+  const q = String(req.query.q || '').trim().slice(0, 100).toLowerCase();
+  if (!q) return res.json(ordersNewestFirst(() => true).slice(0, 200).map(orderOut));
+  const digits = q.replace(/[^0-9]/g, '');
+  // Local "0244..." also matches the stored international "233244..." form.
+  const digitVariants = [digits, digits.startsWith('0') ? `233${digits.slice(1)}` : ''].filter((d) => d.length >= 3);
+  const norm = (v) => String(v ?? '').toLowerCase();
+  const rows = ordersNewestFirst((o) => {
+    const phone = String(o.phone ?? '').replace(/[^0-9]/g, '');
+    return norm(o.ref).includes(q) || norm(o.customer_name).includes(q) || norm(o.email).includes(q)
+      || norm(o.address).includes(q) || norm(o.phone).includes(q)
+      || digitVariants.some((d) => phone.includes(d));
+  });
+  res.json(rows.slice(0, 200).map(orderOut));
 }));
 
 api.patch('/admin/orders/:id', requireAdmin, wrap((req, res) => {
