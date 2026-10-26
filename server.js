@@ -87,6 +87,30 @@ function seedIfEmpty() {
 }
 seedIfEmpty();
 
+// One-time renames for the 18-series rows, which used to share the same name and variant
+// (so the shop showed what looked like duplicate cards). Keyed by the old slug; a row that is
+// already renamed is skipped, so this is safe on every start.
+const PRODUCT_RENAMES = {
+  'iphone-18-pro-256gb-brand-new-burgundy-black-glacier': { slug: 'iphone-18-pro-256gb-burgundy-black-glacier', name: 'iPhone 18 Pro 256GB (Burgundy / Black / Glacier)' },
+  'iphone-18-pro-max-256gb-brand-new-burgundy': { slug: 'iphone-18-pro-max-256gb-burgundy', name: 'iPhone 18 Pro Max 256GB (Burgundy)' },
+  'iphone-18-pro-max-256gb-brand-new-blue-white-black': { slug: 'iphone-18-pro-max-256gb-blue-white-black', name: 'iPhone 18 Pro Max 256GB (Blue / White / Black)', variant: 'Brand New · pick colour' },
+  'iphone-18-pro-max-512gb-brand-new-burgundy': { slug: 'iphone-18-pro-max-512gb-burgundy', name: 'iPhone 18 Pro Max 512GB (Burgundy)' },
+  'iphone-18-pro-max-512gb-brand-new-silver': { slug: 'iphone-18-pro-max-512gb-silver', name: 'iPhone 18 Pro Max 512GB (Silver)' },
+  'iphone-18-pro-max-512gb-brand-new-black': { slug: 'iphone-18-pro-max-512gb-black', name: 'iPhone 18 Pro Max 512GB (Black)' },
+  'iphone-18-pro-max-512gb-brand-new-white': { slug: 'iphone-18-pro-max-512gb-white', name: 'iPhone 18 Pro Max 512GB (White)' },
+};
+function applyProductRenames() {
+  db.transaction(() => {
+    for (const [oldSlug, next] of Object.entries(PRODUCT_RENAMES)) {
+      const row = db.find('products', (r) => r.slug === oldSlug);
+      if (!row) continue;
+      if (db.find('products', (r) => r.slug === next.slug)) continue;
+      db.update('products', (r) => r.slug === oldSlug, { slug: next.slug, name: next.name, ...(next.variant ? { variant: next.variant } : {}) });
+    }
+  });
+}
+applyProductRenames();
+
 // ---------- helpers ----------
 class HttpError extends Error {
   constructor(status, message) { super(message); this.status = status; }
