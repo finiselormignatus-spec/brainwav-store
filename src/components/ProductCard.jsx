@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { money, stockLabel } from '../lib/store.js';
@@ -30,6 +31,20 @@ function IphonePills({ product }) {
   );
 }
 
+// Always a visible graphic: real image, or a small branded tile if missing or failed to load.
+function CardImage({ product }) {
+  const [failed, setFailed] = useState(false);
+  const label = product.category === 'iphones' ? 'iPhone' : product.category === 'giftcards' ? 'Gift' : 'Plan';
+  if (!product.image_url || failed) {
+    return (
+      <span className={`grid h-full w-full place-items-center font-display text-2xl font-extrabold leading-none ${product.category === 'iphones' ? 'text-forest' : 'text-royal'}`} role="img" aria-label={product.name}>
+        {label}
+      </span>
+    );
+  }
+  return <img src={product.image_url} alt="" className="h-full w-full object-contain" loading="lazy" decoding="async" onError={() => setFailed(true)} />;
+}
+
 export default function ProductCard({ product, index = 0, className = '' }) {
   const reduce = useReducedMotion();
   const stock = stockLabel(product.stock);
@@ -45,13 +60,7 @@ export default function ProductCard({ product, index = 0, className = '' }) {
         className="group flex h-full flex-col overflow-hidden rounded-md border border-neutral-200 bg-white transition-transform duration-200 active:scale-[0.98]"
       >
         <div className="relative grid aspect-square place-items-center bg-white p-3">
-          {product.image_url ? (
-            <img src={product.image_url} alt="" className="h-full w-full object-contain" loading="lazy" />
-          ) : (
-            <span className={`font-display text-3xl font-extrabold ${product.category === 'iphones' ? 'text-forest' : 'text-royal'}`}>
-              {product.category === 'iphones' ? 'iPhone' : product.category === 'giftcards' ? 'Gift' : 'Plan'}
-            </span>
-          )}
+          <CardImage product={product} />
         </div>
         <div className="flex flex-1 flex-col gap-1 p-2.5 md:p-3">
           <h3 className="font-sans text-[13px] font-normal leading-snug text-neutral-500 line-clamp-2">{product.name}</h3>
