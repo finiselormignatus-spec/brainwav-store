@@ -78,10 +78,10 @@ export default function Product() {
       <div className="grid gap-4 md:grid-cols-2 md:gap-10">
         <motion.div
           layoutId={`product-${product.slug}`}
-          className={`grid aspect-[4/3] place-items-center overflow-hidden rounded-3xl md:aspect-square ${isIphone ? 'bg-forest' : 'bg-royal'}`}
+          className={`grid aspect-square place-items-center overflow-hidden rounded-3xl p-4 md:p-8 ${isIphone ? 'bg-forest' : 'bg-royal'}`}
         >
           {product.image_url ? (
-            <img src={product.image_url} alt={product.name} className="h-full w-full object-cover" />
+            <img src={product.image_url} alt={product.name} className="h-full w-full object-contain" />
           ) : (
             <span className="font-display text-5xl font-extrabold text-lime">{isIphone ? 'iPhone' : product.category === 'giftcards' ? 'Gift' : 'Plan'}</span>
           )}

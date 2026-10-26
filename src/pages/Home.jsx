@@ -149,7 +149,7 @@ export default function Home() {
         </motion.ul>
       </section>
 
-      <section aria-labelledby="cats" className="pt-6 md:px-6 md:pt-8">
+      <section aria-labelledby="cats" className="pt-5 md:px-6 md:pt-8">
         <h2 id="cats" className="sr-only">Shop by category</h2>
         <ul className="swipe-row -mx-0 flex snap-x snap-mandatory scroll-px-4 gap-3 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-3 md:gap-3 md:overflow-visible md:p-0">
           {CATEGORIES.map((c, i) => (
@@ -166,11 +166,11 @@ export default function Home() {
         </ul>
       </section>
 
-      <section aria-labelledby="featured" className="px-4 pt-8 md:px-6 md:pt-12">
+      <section aria-labelledby="featured" className="px-4 pt-6 md:px-6 md:pt-10">
         {deal && (
           <Link to={`/product/${deal.slug}`} className="mb-5 flex items-center gap-3 overflow-hidden rounded-2xl bg-forest p-3.5 text-white transition-transform active:scale-[0.99] md:mb-6 md:p-4">
             <span className="grid h-14 w-14 shrink-0 place-items-center rounded-xl bg-white/10 md:h-16 md:w-16">
-              {deal.image_url ? <img src={deal.image_url} alt="" className="h-full w-full rounded-xl object-cover" /> : <span className="font-display text-sm font-extrabold text-lime">iPhone</span>}
+              {deal.image_url ? <img src={deal.image_url} alt="" className="h-full w-full rounded-xl object-contain" /> : <span className="font-display text-sm font-extrabold text-lime">iPhone</span>}
             </span>
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-1.5 font-mono text-[11px] font-medium uppercase tracking-wider text-lime"><Lightning size={14} weight="fill" aria-hidden="true" />Deals of the week</span>
@@ -235,7 +235,7 @@ export default function Home() {
         )}
       </section>
 
-      <section aria-labelledby="services" className="px-4 pt-8 md:px-6 md:pt-14">
+      <section aria-labelledby="services" className="px-4 pt-6 md:px-6 md:pt-10">
         <motion.div {...fade()} className="overflow-hidden rounded-3xl bg-royal text-white md:grid md:grid-cols-5">
           <div className="p-5 md:col-span-2 md:p-10">
             <p className="font-mono text-xs uppercase tracking-wider text-lime">Services</p>
