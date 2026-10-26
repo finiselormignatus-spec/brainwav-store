@@ -30,8 +30,18 @@ function modelKey(p) {
     .toLowerCase();
 }
 
-function randomSpreadShuffle(list) {
-  const shuffled = (items) => {
+const isSub = (p) => p.category === 'subscriptions';
+
+function isValidOrder(arr) {
+  for (let i = 1; i < arr.length; i++) {
+    if (modelKey(arr[i]) === modelKey(arr[i - 1])) return false;
+    if (isSub(arr[i]) && isSub(arr[i - 1])) return false;
+  }
+  return arr.slice(0, 8).filter(isSub).length <= 2;
+}
+
+function buildSpreadShuffle(list) {
+  const rnd = (items) => {
     const a = [...items];
     for (let i = a.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -39,23 +49,38 @@ function randomSpreadShuffle(list) {
     }
     return a;
   };
-  const hasAdjacent = (arr) => arr.some((p, i) => i > 0 && modelKey(p) === modelKey(arr[i - 1]));
-  let best = null;
-  for (let attempt = 0; attempt < 200; attempt++) {
-    const candidate = shuffled(list);
-    if (!hasAdjacent(candidate)) return candidate;
-    best = candidate;
+  const subs = rnd(list.filter(isSub));
+  const others = rnd(list.filter((p) => !isSub(p)));
+  const n = list.length;
+  // Spread subscriptions at roughly even intervals with jitter, none before position 2.
+  const slots = new Set();
+  if (subs.length) {
+    const gap = n / subs.length;
+    for (let k = 0; k < subs.length; k++) {
+      let pos = Math.floor(2 + k * gap + Math.random() * Math.max(1, gap * 0.5));
+      while (pos < n && slots.has(pos)) pos++;
+      if (pos < n) slots.add(pos);
+    }
   }
-  // Fallback: push same-model items apart greedily (only reached if one model dominates).
-  const rest = [...best];
   const out = [];
-  while (rest.length) {
-    const last = out.length ? modelKey(out[out.length - 1]) : null;
-    let idx = rest.findIndex((p) => modelKey(p) !== last);
-    if (idx === -1) idx = 0;
-    out.push(rest.splice(idx, 1)[0]);
+  let oi = 0;
+  let si = 0;
+  for (let pos = 0; pos < n; pos++) {
+    if (slots.has(pos) && si < subs.length) out.push(subs[si++]);
+    else if (oi < others.length) out.push(others[oi++]);
+    else out.push(subs[si++]);
   }
   return out;
+}
+
+// Random order drawn per visit; retried until it meets the layout rules.
+function randomSpreadShuffle(list) {
+  let last = [];
+  for (let attempt = 0; attempt < 500; attempt++) {
+    last = buildSpreadShuffle(list);
+    if (isValidOrder(last)) return last;
+  }
+  return last;
 }
 
 export default function Shop() {
