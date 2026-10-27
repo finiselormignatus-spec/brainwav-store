@@ -44,9 +44,13 @@ export default function Cart() {
                   transition={{ type: 'spring', stiffness: 380, damping: 34 }}
                   className="flex gap-4 overflow-hidden rounded-2xl border border-hairline bg-surface p-4"
                 >
-                  <div className={`grid h-20 w-20 shrink-0 place-items-center rounded-xl ${item.category === 'iphones' ? 'bg-forest' : 'bg-royal'}`}>
-                    <span className="font-display text-sm font-extrabold text-lime">{item.category === 'iphones' ? 'iPhone' : 'Item'}</span>
-                  </div>
+                  {item.image_url ? (
+                    <img src={item.image_url} alt={item.name} className="h-20 w-20 shrink-0 rounded-xl border border-hairline bg-white object-contain p-1" />
+                  ) : (
+                    <div className={`grid h-20 w-20 shrink-0 place-items-center rounded-xl ${item.category === 'iphones' ? 'bg-forest' : 'bg-royal'}`}>
+                      <span className="font-display text-sm font-extrabold text-lime">{item.category === 'iphones' ? 'iPhone' : 'Item'}</span>
+                    </div>
+                  )}
                   <div className="flex min-w-0 flex-1 flex-col gap-2">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">

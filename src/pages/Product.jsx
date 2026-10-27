@@ -59,6 +59,7 @@ export default function Product() {
       productId: product.id, slug: product.slug, name: product.name, variant: product.variant,
       price: product.price, qty: safeQty, stock: product.stock, category: product.category,
       condition: product.condition, battery: product.battery, storage: product.storage,
+      image_url: product.image_url || '',
     });
     setAdded(true);
     toast('Added to your cart');
