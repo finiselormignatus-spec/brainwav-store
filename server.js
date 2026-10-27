@@ -7,7 +7,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { JsonStore } from './store.js';
+import { JsonStore, PgStore } from './store.js';
 import { sendWelcome, sendOrderConfirmation } from './mailer.js';
 
 // Load .env (no dependency): simple KEY=VALUE lines, existing env wins.
@@ -42,14 +42,19 @@ const SETTING_KEYS = ['paystack_enabled', 'paystack_public_key'];
 
 // ---------- storage ----------
 // Tables and their unique columns. Same names and rules as the old SQL schema.
-const db = new JsonStore(path.join(DATA_DIR, 'store.db'), {
+// If DATABASE_URL is set, data lives in Postgres (survives restarts on hosts with no disk, e.g. Render free).
+// Otherwise it stays in the JSON file under DATA_DIR, exactly as before.
+const STORE_TABLES = {
   products: { unique: ['slug'] },
   customers: { unique: ['email'] },
   customer_sessions: { unique: ['token_hash'] },
   admin_sessions: { unique: ['token_hash'] },
   orders: { unique: ['ref'] },
   settings: { unique: ['key'] },
-});
+};
+const db = process.env.DATABASE_URL
+  ? await PgStore.open(process.env.DATABASE_URL, STORE_TABLES)
+  : new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES);
 
 const nowStamp = () => new Date().toISOString().slice(0, 19).replace('T', ' ');
 
@@ -657,5 +662,5 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`Marc Brainwav Premium Deals running on http://localhost:${PORT}`);
-  console.log(`Data file: ${path.join(DATA_DIR, 'store.db')}`);
+  console.log(process.env.DATABASE_URL ? 'Data: Postgres (DATABASE_URL)' : `Data file: ${path.join(DATA_DIR, 'store.db')}`);
 });

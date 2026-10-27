@@ -133,3 +133,83 @@ export class JsonStore {
     return changed;
   }
 }
+
+// Postgres-backed variant. Used only when DATABASE_URL is set (see server.js).
+// Same public API as JsonStore: reads come from memory, and every save writes the changed tables to Postgres.
+// Saves are queued in order, so the database always ends up matching memory.
+// Schema: one row per table in brainwav_tables (name, seq, rows as JSONB). Created with CREATE TABLE IF NOT EXISTS.
+// Set DATABASE_SSL=false only for a local Postgres without TLS. Hosted databases (Render, Neon, Supabase) need TLS.
+export class PgStore extends JsonStore {
+  constructor(connectionString, tables) {
+    // Skip JsonStore's file load (it is synchronous); PgStore.open() loads from Postgres instead.
+    super(null, tables);
+    this.connectionString = connectionString;
+    this.pool = null;
+    this.chain = Promise.resolve();
+    this.saveError = null;
+  }
+
+  load() {}
+
+  static async open(connectionString, tables) {
+    const store = new PgStore(connectionString, tables);
+    await store.init();
+    return store;
+  }
+
+  async init() {
+    const { default: pg } = await import('pg');
+    const ssl = process.env.DATABASE_SSL === 'false' ? false : { rejectUnauthorized: false };
+    this.pool = new pg.Pool({ connectionString: this.connectionString, ssl, max: 4 });
+    await this.pool.query(`CREATE TABLE IF NOT EXISTS brainwav_tables (
+      name TEXT PRIMARY KEY,
+      seq BIGINT NOT NULL DEFAULT 0,
+      rows JSONB NOT NULL DEFAULT '[]'::jsonb
+    )`);
+    const res = await this.pool.query('SELECT name, seq, rows FROM brainwav_tables');
+    const found = new Map(res.rows.map((r) => [r.name, r]));
+    for (const name of Object.keys(this.tableDefs)) {
+      const r = found.get(name);
+      this.state[name] = r && Array.isArray(r.rows) ? { seq: Number(r.seq) || 0, rows: r.rows } : { seq: 0, rows: [] };
+    }
+    // Create missing table rows right away so a fresh database is initialised.
+    await this.writeAll();
+  }
+
+  writeAll() {
+    const snapshot = clone(this.state);
+    const job = this.chain.then(async () => {
+      const client = await this.pool.connect();
+      try {
+        await client.query('BEGIN');
+        for (const [name, t] of Object.entries(snapshot)) {
+          await client.query(
+            `INSERT INTO brainwav_tables (name, seq, rows) VALUES ($1, $2, $3::jsonb)
+             ON CONFLICT (name) DO UPDATE SET seq = EXCLUDED.seq, rows = EXCLUDED.rows`,
+            [name, t.seq, JSON.stringify(t.rows)],
+          );
+        }
+        await client.query('COMMIT');
+        this.saveError = null;
+      } catch (e) {
+        await client.query('ROLLBACK').catch(() => {});
+        this.saveError = e;
+        console.error('Postgres save failed:', e.message);
+      } finally {
+        client.release();
+      }
+    });
+    this.chain = job;
+    return job;
+  }
+
+  save() {
+    if (this.depth > 0) return;
+    this.writeAll();
+  }
+
+  // Resolves once every queued write has finished. Call before exit if you need it.
+  async flush() {
+    await this.chain;
+  }
+}
