@@ -52,12 +52,15 @@ const STORE_TABLES = {
   orders: { unique: ['ref'] },
   settings: { unique: ['key'] },
 };
+// The dashboard paste on mobile sometimes injects line breaks / stray dashes into the value.
+// Clean the obvious artifacts instead of making Dremo hand-edit a 100-character string.
+const cleanDbUrl = (u) => u.replace(/\s+/g, '').replace(/\.-com/g, '.com');
 let db;
 try {
   if (process.env.DATABASE_URL) {
     // Retry: free hosts (Render) sometimes fail DNS on cold boot; never let the whole site die over it.
     for (let attempt = 1; ; attempt++) {
-      try { db = await PgStore.open(process.env.DATABASE_URL, STORE_TABLES); break; }
+      try { db = await PgStore.open(cleanDbUrl(process.env.DATABASE_URL), STORE_TABLES); break; }
       catch (err) {
         console.error(`Postgres connect attempt ${attempt} failed: ${err.message}`);
         if (attempt >= 5) { console.error('Falling back to JSON file mode for this boot.'); db = new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES); break; }
