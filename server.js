@@ -54,7 +54,7 @@ const STORE_TABLES = {
 };
 // The dashboard paste on mobile sometimes injects line breaks / stray dashes into the value.
 // Clean the obvious artifacts instead of making Dremo hand-edit a 100-character string.
-const cleanDbUrl = (u) => u.replace(/\s+/g, '').replace(/\.-com/g, '.com');
+const cleanDbUrl = (u) => u.replace(/\s+/g, '').replace(/\.-com/g, '.com').replace(/[^\x21-\x7e]/g, '');
 let db;
 try {
   if (process.env.DATABASE_URL) {
