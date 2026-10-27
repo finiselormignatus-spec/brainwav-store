@@ -52,9 +52,25 @@ const STORE_TABLES = {
   orders: { unique: ['ref'] },
   settings: { unique: ['key'] },
 };
-const db = process.env.DATABASE_URL
-  ? await PgStore.open(process.env.DATABASE_URL, STORE_TABLES)
-  : new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES);
+let db;
+try {
+  if (process.env.DATABASE_URL) {
+    // Retry: free hosts (Render) sometimes fail DNS on cold boot; never let the whole site die over it.
+    for (let attempt = 1; ; attempt++) {
+      try { db = await PgStore.open(process.env.DATABASE_URL, STORE_TABLES); break; }
+      catch (err) {
+        console.error(`Postgres connect attempt ${attempt} failed: ${err.message}`);
+        if (attempt >= 5) { console.error('Falling back to JSON file mode for this boot.'); db = new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES); break; }
+        await new Promise((r) => setTimeout(r, attempt * 5000));
+      }
+    }
+  } else {
+    db = new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES);
+  }
+} catch (err) {
+  console.error(`Storage init failed, using JSON file mode: ${err.message}`);
+  db = new JsonStore(path.join(DATA_DIR, 'store.db'), STORE_TABLES);
+}
 
 const nowStamp = () => new Date().toISOString().slice(0, 19).replace('T', ' ');
 
