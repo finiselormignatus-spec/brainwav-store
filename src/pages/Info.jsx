@@ -56,7 +56,7 @@ const FAQS = [
   { q: 'Do you deliver outside Accra?', a: 'Yes. Nationwide delivery is available for iPhones. Delivery is arranged after checkout, and we will confirm the fee and timing with you.' },
   { q: 'How do I get a subscription or gift card?', a: 'Subscriptions and gift cards are delivered digitally by WhatsApp or email after your payment is confirmed.' },
   { q: 'Are the phones tested?', a: 'Yes. Every phone is tested by hand before it is listed.' },
-  { q: 'What if something is wrong with my order?', a: 'Message us on WhatsApp with your order reference as soon as possible. Faulty items can be returned within 7 days of delivery. See Delivery &amp; Returns for the details.' },
+  { q: 'What if something is wrong with my order?', a: 'Message us on WhatsApp with your order reference as soon as possible. Faulty items can be returned within 7 days of delivery. See Delivery & Returns for the details.' },
   { q: 'Can I track my order?', a: 'Yes. Open your order from the Account page or use the order link we send you. You can also ask us on WhatsApp.' },
   { q: 'How do I contact you?', a: 'WhatsApp +233 59 548 4295, call 0501994337, or Snapchat keli_brainwav21.' },
 ];
@@ -107,7 +107,7 @@ export function Terms() {
         <p>You must give accurate contact and delivery details. Payment is confirmed directly with you before an order is released. We may cancel an order if payment is not received or the product is no longer available, and we will tell you when that happens.</p>
       </Card>
       <Card title="4. Delivery and returns">
-        <p>Delivery and returns are covered in our Delivery &amp; Returns policy, which forms part of these terms.</p>
+        <p>Delivery and returns are covered in our Delivery & Returns policy, which forms part of these terms.</p>
       </Card>
       <Card title="5. Accounts">
         <p>You are responsible for keeping your login details private. Do not share your password with anyone.</p>
@@ -150,7 +150,7 @@ export function Privacy() {
 
 export function DeliveryReturns() {
   return (
-    <Page eyebrow="Policy" title="Delivery &amp; returns" intro="How we deliver, and what to do if something is wrong.">
+    <Page eyebrow="Policy" title="Delivery & returns" intro="How we deliver, and what to do if something is wrong.">
       <Card title="Delivery">
         <p>Delivery is arranged after checkout. Nationwide delivery is available for iPhones. Subscriptions and gift cards are delivered digitally by WhatsApp or email once payment is confirmed.</p>
         <p>Our business location is Accra, Ghana.</p>
