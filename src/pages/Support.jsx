@@ -1,13 +1,12 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { WhatsappLogo, Phone, SnapchatLogo, ChatCircle, ArrowsLeftRight } from '@phosphor-icons/react';
+import { WhatsappLogo, SnapchatLogo, ChatCircle, ArrowsLeftRight } from '@phosphor-icons/react';
 import { CONTACT } from '../lib/store.js';
 
 export default function Support() {
   const reduce = useReducedMotion();
   const channels = [
     { href: CONTACT.whatsappUrl, label: 'WhatsApp', detail: CONTACT.whatsappNumber, icon: WhatsappLogo, primary: true, external: true },
-    { href: `tel:${CONTACT.phone}`, label: 'Call us', detail: CONTACT.phone, icon: Phone },
     { href: CONTACT.snapchatUrl, label: 'Snapchat', detail: CONTACT.snapchat, icon: SnapchatLogo, external: true },
     { href: '/send-money', label: 'Exchange', detail: 'Receive money from abroad, paid in cedis in Ghana', icon: ArrowsLeftRight, internal: true },
   ];

@@ -62,7 +62,7 @@ SMTP_FROM="Marc Brainwav Premium Deals <you@gmail.com>"
 - Paystack is stubbed behind a flag in the admin Settings. Turn it on there when you have your Paystack key.
 
 ## Contact
-WhatsApp +233595484295, call 0501994337, Snapchat keli_brainwav21.
+WhatsApp +233595484295, Snapchat keli_brainwav21.
 
 ## Project layout
 - `server.js`: API and static server (Express + JSON-file store, no native build tools)

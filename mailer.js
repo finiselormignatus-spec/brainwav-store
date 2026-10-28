@@ -5,7 +5,7 @@
 import nodemailer from 'nodemailer';
 
 const SHOP = 'Marc Brainwav Premium Deals';
-const CONTACT = 'WhatsApp +233595484295, call 0501994337, Snapchat keli_brainwav21';
+const CONTACT = 'WhatsApp +233595484295, Snapchat keli_brainwav21';
 
 let transporter = null;
 

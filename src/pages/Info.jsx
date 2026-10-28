@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft, WhatsappLogo, Phone, ChatCircle } from '@phosphor-icons/react';
+import { ArrowLeft, WhatsappLogo, ChatCircle } from '@phosphor-icons/react';
 import { CONTACT } from '../lib/store.js';
 
 const waText = (msg) => `${CONTACT.whatsappUrl}?text=${encodeURIComponent(msg)}`;
@@ -43,7 +43,6 @@ export function About() {
       </Card>
       <Card title="Talk to us">
         <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-2 font-semibold text-forest"><WhatsappLogo size={18} weight="bold" aria-hidden="true" /> WhatsApp +233 59 548 4295</a>
-        <a href={`tel:${CONTACT.phone}`} className="inline-flex min-h-[44px] items-center gap-2 font-semibold text-forest"><Phone size={18} weight="bold" aria-hidden="true" /> Call 0501994337</a>
         <p className="text-muted">Snapchat: {CONTACT.snapchat}</p>
       </Card>
     </Page>
@@ -58,12 +57,12 @@ const FAQS = [
   { q: 'Are the phones tested?', a: 'Yes. Every phone is tested by hand before it is listed.' },
   { q: 'What if something is wrong with my order?', a: 'Message us on WhatsApp with your order reference as soon as possible. Faulty items can be returned within 7 days of delivery. See Delivery & Returns for the details.' },
   { q: 'Can I track my order?', a: 'Yes. Open your order from the Account page or use the order link we send you. You can also ask us on WhatsApp.' },
-  { q: 'How do I contact you?', a: 'WhatsApp +233 59 548 4295, call 0501994337, or Snapchat keli_brainwav21.' },
+  { q: 'How do I contact you?', a: 'WhatsApp +233 59 548 4295, or Snapchat keli_brainwav21.' },
 ];
 
 export function Faqs() {
   return (
-    <Page eyebrow="Help" title="Frequently asked questions" intro="Quick answers. Still stuck? Message us on WhatsApp.">
+    <Page eyebrow="Help" title="Frequently asked questions" intro="Quick answers. Still stuck?Message us on WhatsApp.">
       <Card title="Questions" id="faq">
         <dl className="grid gap-4">
           {FAQS.map((f) => (
@@ -117,7 +116,7 @@ export function Terms() {
       </Card>
       <Card title="7. Contact">
         <p>Business location: Marc Brainwav Premium Deals, Accra, Ghana.</p>
-        <p>For any question about these terms, message us on WhatsApp +233 59 548 4295 or call 0501994337.</p>
+        <p>For any question about these terms, message us on WhatsApp +233 59 548 4295.</p>
       </Card>
     </Page>
   );
@@ -139,7 +138,7 @@ export function Privacy() {
         <p>Passwords are never stored in plain text. We keep only a one-way hash of your password. We keep your information only as long as needed for orders, accounts and legal record keeping.</p>
       </Card>
       <Card title="Your rights">
-        <p>You can ask us to see, correct or delete the personal information we hold about you. Message us on WhatsApp +233 59 548 4295 or call 0501994337 to make a request.</p>
+        <p>You can ask us to see, correct or delete the personal information we hold about you.Message us on WhatsApp +233 59 548 4295 to make a request.</p>
       </Card>
       <Card title="Cookies and storage">
         <p>The site uses your browser's local storage to keep your cart and to keep you logged in.</p>
@@ -167,7 +166,7 @@ export function DeliveryReturns() {
         <p>Refunds are paid to the Mobile Money number or bank account you give us, or by bank transfer. A refund is only paid after the returned item has been checked, and the amount and timing are agreed with you on WhatsApp.</p>
       </Card>
       <Card title="Questions">
-        <p>Message us on WhatsApp +233 59 548 4295 or call 0501994337.</p>
+        <p>Message us on WhatsApp +233 59 548 4295.</p>
       </Card>
     </Page>
   );

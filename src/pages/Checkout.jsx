@@ -176,7 +176,7 @@ export default function Checkout() {
         <button type="submit" disabled={busy} className="mt-6 min-h-[56px] w-full rounded-full bg-lime font-bold text-forest transition-transform active:scale-[0.98] disabled:opacity-60">
           {busy ? 'Saving your order…' : paystackOn ? 'Continue to payment' : 'Place my order'}
         </button>
-        <p className="mt-3 text-center text-xs text-white/70">Questions? WhatsApp {CONTACT.phone}</p>
+        <p className="mt-3 text-center text-xs text-white/70">Questions? WhatsApp +{CONTACT.whatsappNumber}</p>
       </aside>
     </form>
   );

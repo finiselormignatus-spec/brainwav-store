@@ -1,6 +1,6 @@
 import { Routes, Route, Link, NavLink, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
-import { House, Storefront, ShoppingBag, Headset, WhatsappLogo, Phone } from '@phosphor-icons/react';
+import { House, Storefront, ShoppingBag, Headset, WhatsappLogo } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import Home from './pages/Home.jsx';
 import Shop from './pages/Shop.jsx';
@@ -131,9 +131,6 @@ function Footer() {
         <div className="grid gap-2 text-sm font-semibold">
           <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-2 text-forest">
             <WhatsappLogo size={18} weight="bold" aria-hidden="true" /> WhatsApp +233595484295
-          </a>
-          <a href="tel:0501994337" className="inline-flex min-h-[44px] items-center gap-2 text-forest">
-            <Phone size={18} weight="bold" aria-hidden="true" /> Call 0501994337
           </a>
           <p className="text-muted">Snapchat: keli_brainwav21</p>
         </div>
