@@ -36,12 +36,13 @@ export function About() {
       <Card title="Who we are">
         <p>Marc Brainwav Premium Deals is a phone, laptop and subscription shop based in Accra, Ghana. We sell tested phones and laptops at fair cedi prices, and digital subscriptions delivered to you by WhatsApp or email.</p>
         <p>Every phone we list is checked by hand before it goes out. Prices are shown in Ghana cedis (GH₵).</p>
+        <p>Business location: Accra, Ghana.</p>
       </Card>
       <Card title="How we work">
         <p>You browse and add items to your cart. We confirm the order and payment with you directly on WhatsApp, then arrange delivery or digital delivery. </p>
       </Card>
       <Card title="Talk to us">
-        <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-2 font-semibold text-forest"><WhatsappLogo size={18} weight="bold" aria-hidden="true" /> WhatsApp +233****4295</a>
+        <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[44px] items-center gap-2 font-semibold text-forest"><WhatsappLogo size={18} weight="bold" aria-hidden="true" /> WhatsApp +233 59 548 4295</a>
         <a href={`tel:${CONTACT.phone}`} className="inline-flex min-h-[44px] items-center gap-2 font-semibold text-forest"><Phone size={18} weight="bold" aria-hidden="true" /> Call 0501994337</a>
         <p className="text-muted">Snapchat: {CONTACT.snapchat}</p>
       </Card>
@@ -55,9 +56,9 @@ const FAQS = [
   { q: 'Do you deliver outside Accra?', a: 'Yes. Nationwide delivery is available for iPhones. Delivery is arranged after checkout, and we will confirm the fee and timing with you.' },
   { q: 'How do I get a subscription or gift card?', a: 'Subscriptions and gift cards are delivered digitally by WhatsApp or email after your payment is confirmed.' },
   { q: 'Are the phones tested?', a: 'Yes. Every phone is tested by hand before it is listed.' },
-  { q: 'What if something is wrong with my order?', a: 'Message us on WhatsApp with your order reference as soon as possible. We will look at it with you and sort it out. See Delivery & Returns for the details.' },
+  { q: 'What if something is wrong with my order?', a: 'Message us on WhatsApp with your order reference as soon as possible. Faulty items can be returned within 7 days of delivery. See Delivery &amp; Returns for the details.' },
   { q: 'Can I track my order?', a: 'Yes. Open your order from the Account page or use the order link we send you. You can also ask us on WhatsApp.' },
-  { q: 'How do I contact you?', a: 'WhatsApp +233****4295, call 0501994337, or Snapchat keli_brainwav21.' },
+  { q: 'How do I contact you?', a: 'WhatsApp +233 59 548 4295, call 0501994337, or Snapchat keli_brainwav21.' },
 ];
 
 export function Faqs() {
@@ -115,7 +116,8 @@ export function Terms() {
         <p>How we handle your personal information is set out in our Privacy Policy.</p>
       </Card>
       <Card title="7. Contact">
-        <p>For any question about these terms, message us on WhatsApp +233****4295 or call 0501994337.</p>
+        <p>Business location: Marc Brainwav Premium Deals, Accra, Ghana.</p>
+        <p>For any question about these terms, message us on WhatsApp +233 59 548 4295 or call 0501994337.</p>
       </Card>
     </Page>
   );
@@ -131,13 +133,13 @@ export function Privacy() {
         <p>We use your information to create and manage your account, process and deliver your orders, confirm payments with you, and reply to your messages. We send order confirmations and account emails to the address you give us.</p>
       </Card>
       <Card title="Who we share it with">
-        <p>We do not sell your personal information. We share it only where needed to complete your order, for example with a delivery person, or where the law requires it. Payments are handled through the payment method we agree with you.</p>
+        <p>We do not sell your personal information. We share it only where needed to complete your order, for example with a delivery person, or where the law requires it. When online card or Mobile Money payment is switched on, payments are processed by Paystack. We do not store your card details.</p>
       </Card>
       <Card title="How we keep it safe">
         <p>Passwords are never stored in plain text. We keep only a one-way hash of your password. We keep your information only as long as needed for orders, accounts and legal record keeping.</p>
       </Card>
       <Card title="Your rights">
-        <p>You can ask us to see, correct or delete the personal information we hold about you. Message us on WhatsApp +233****4295 or call 0501994337 to make a request.</p>
+        <p>You can ask us to see, correct or delete the personal information we hold about you. Message us on WhatsApp +233 59 548 4295 or call 0501994337 to make a request.</p>
       </Card>
       <Card title="Cookies and storage">
         <p>The site uses your browser's local storage to keep your cart and to keep you logged in.</p>
@@ -151,19 +153,21 @@ export function DeliveryReturns() {
     <Page eyebrow="Policy" title="Delivery &amp; returns" intro="How we deliver, and what to do if something is wrong.">
       <Card title="Delivery">
         <p>Delivery is arranged after checkout. Nationwide delivery is available for iPhones. Subscriptions and gift cards are delivered digitally by WhatsApp or email once payment is confirmed.</p>
+        <p>Our business location is Accra, Ghana.</p>
         <p>We confirm the delivery fee and timing with you on WhatsApp before we send the item.</p>
       </Card>
       <Card title="Checking your order">
         <p>When your item arrives, check that it matches your order before you accept it. Test the phone or laptop where you can before the delivery person leaves.</p>
       </Card>
       <Card title="Returns and faults">
-        <p>If an item is faulty or not as described, message us on WhatsApp straight away with your order reference and photos or a short video of the problem. We will review it with you and agree the fix or return with you directly.</p>
+        <p>Return window: you can return an item that is faulty or not as described within 7 days of delivery.</p>
+        <p>To start a return, message us on WhatsApp straight away with your order reference and photos or a short video of the problem. We will review it with you and agree the fix or return with you directly.</p>
       </Card>
       <Card title="Refunds">
-        <p>Refunds are agreed with you on WhatsApp after the returned item has been checked.</p>
+        <p>Refunds are paid to the Mobile Money number or bank account you give us, or by bank transfer. A refund is only paid after the returned item has been checked, and the amount and timing are agreed with you on WhatsApp.</p>
       </Card>
       <Card title="Questions">
-        <p>Message us on WhatsApp +233****4295 or call 0501994337.</p>
+        <p>Message us on WhatsApp +233 59 548 4295 or call 0501994337.</p>
       </Card>
     </Page>
   );

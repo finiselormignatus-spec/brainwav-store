@@ -262,7 +262,7 @@ export default function Home() {
       <section aria-labelledby="contact" className="px-4 pt-8 pb-4 md:px-6 md:pt-14">
         <motion.div {...fade()} className="rounded-3xl border border-hairline bg-surface p-5 md:p-10">
           <h2 id="contact" className="font-display text-2xl font-extrabold">Your trust, our reputation</h2>
-          <p className="mt-2 hidden text-muted md:block">Chat with us anytime, or call during business hours.</p>
+          <p className="mt-2 hidden text-muted md:block">Chat with us on WhatsApp or call us any time.</p>
           <div className="mt-4 flex flex-wrap gap-2 md:mt-5 md:gap-3">
             <a href={`tel:${CONTACT.phone}`} className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-forest px-6 font-bold text-lime"><Phone size={20} weight="bold" aria-hidden="true" /> {CONTACT.phone}</a>
             <Link to="/support" className="hidden min-h-[52px] items-center rounded-full border border-hairline px-6 font-semibold md:inline-flex">All contact options</Link>
