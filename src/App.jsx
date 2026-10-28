@@ -10,6 +10,7 @@ import Checkout from './pages/Checkout.jsx';
 import Order from './pages/Order.jsx';
 import Support from './pages/Support.jsx';
 import SendMoney from './pages/SendMoney.jsx';
+import { About, Faqs, Feedback, Terms, Privacy, DeliveryReturns } from './pages/Info.jsx';
 import Admin from './pages/Admin.jsx';
 import Account from './pages/Account.jsx';
 import { Register, Login } from './pages/Auth.jsx';
@@ -136,6 +137,16 @@ function Footer() {
           </a>
           <p className="text-muted">Snapchat: keli_brainwav21</p>
         </div>
+        <nav aria-label="Store information" className="grid gap-2 text-sm font-semibold md:col-span-3">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            <li><Link to="/about" className="inline-flex min-h-[36px] items-center text-forest">About</Link></li>
+            <li><Link to="/faqs" className="inline-flex min-h-[36px] items-center text-forest">FAQs</Link></li>
+            <li><Link to="/feedback" className="inline-flex min-h-[36px] items-center text-forest">Feedback</Link></li>
+            <li><Link to="/delivery-returns" className="inline-flex min-h-[36px] items-center text-forest">Delivery &amp; Returns</Link></li>
+            <li><Link to="/terms" className="inline-flex min-h-[36px] items-center text-forest">Terms of Service</Link></li>
+            <li><Link to="/privacy" className="inline-flex min-h-[36px] items-center text-forest">Privacy Policy</Link></li>
+          </ul>
+        </nav>
         <div className="hidden gap-3 text-sm md:grid">
           <p><span className="font-bold">Orders and problems:</span> <span className="text-muted">Message us on WhatsApp about any order. We confirm payment with you directly.</span></p>
         </div>
@@ -177,6 +188,12 @@ export default function App() {
             <Route path="/order/:ref" element={<Order />} />
             <Route path="/support" element={<Support />} />
             <Route path="/send-money" element={<SendMoney />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/faqs" element={<Faqs />} />
+            <Route path="/feedback" element={<Feedback />} />
+            <Route path="/terms" element={<Terms />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/delivery-returns" element={<DeliveryReturns />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
