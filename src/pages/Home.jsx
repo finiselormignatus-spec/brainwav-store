@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion, useReducedMotion } from 'framer-motion';
-import { CheckCircle, WhatsappLogo, ArrowRight, Package, Star, Truck, Lightning } from '@phosphor-icons/react';
+import { CheckCircle, WhatsappLogo, Phone, ArrowRight, Package, Star, Truck, Lightning } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 import ProductCard from '../components/ProductCard.jsx';
 import { listProducts, CONTACT, money } from '../lib/store.js';
@@ -189,7 +189,7 @@ export default function Home() {
         <motion.figure {...fade()} className="mb-6 rounded-2xl border border-hairline bg-surface p-4 md:mb-8 md:p-6">
           <blockquote className="text-[15px] leading-relaxed text-ink md:text-base">
             <p>I started this shop because I was tired of people in Accra buying phones they could not trust. Every phone I sell is tested by hand before it leaves my hands, from the battery to Face ID.</p>
-            <p className="mt-2">If anything is not right, message me on WhatsApp. I would rather fix it than lose your trust.</p>
+            <p className="mt-2">If anything is not right, call me personally. I would rather fix it than lose your trust.</p>
           </blockquote>
           <figcaption className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
             <span className="font-display font-extrabold">— Marc, Founder</span>
@@ -262,9 +262,9 @@ export default function Home() {
       <section aria-labelledby="contact" className="px-4 pt-8 pb-4 md:px-6 md:pt-14">
         <motion.div {...fade()} className="rounded-3xl border border-hairline bg-surface p-5 md:p-10">
           <h2 id="contact" className="font-display text-2xl font-extrabold">Your trust, our reputation</h2>
-          <p className="mt-2 hidden text-muted md:block">Chat with us on WhatsApp any time.</p>
+          <p className="mt-2 hidden text-muted md:block">Chat with us on WhatsApp or call us any time.</p>
           <div className="mt-4 flex flex-wrap gap-2 md:mt-5 md:gap-3">
-            <a href={CONTACT.whatsappUrl} target="_blank" rel="noreferrer" className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-forest px-6 font-bold text-lime"><WhatsappLogo size={20} weight="bold" aria-hidden="true" /> WhatsApp +233 59 548 4295</a>
+            <a href={`tel:${CONTACT.phone}`} className="inline-flex min-h-[52px] items-center gap-2 rounded-full bg-forest px-6 font-bold text-lime"><Phone size={20} weight="bold" aria-hidden="true" /> {CONTACT.phone}</a>
             <Link to="/support" className="hidden min-h-[52px] items-center rounded-full border border-hairline px-6 font-semibold md:inline-flex">All contact options</Link>
             <Link to="/send-money" className="inline-flex min-h-[52px] items-center rounded-full border border-hairline px-6 font-semibold">Exchange</Link>
           </div>

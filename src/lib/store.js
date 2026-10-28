@@ -3,6 +3,7 @@ import { api } from './api.js';
 export const CONTACT = {
   whatsappNumber: '233595484295',
   whatsappUrl: 'https://wa.me/233595484295',
+  phone: '0501994337',
   snapchat: 'keli_brainwav21',
   snapchatUrl: 'https://www.snapchat.com/add/keli_brainwav21',
 };
